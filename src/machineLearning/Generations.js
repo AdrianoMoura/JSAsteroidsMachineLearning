@@ -75,6 +75,7 @@ export default class Generations {
     goToNextSpecimen() {
         // go to next specimen so respawn new asteroids
         if (this.actualSpecimenBeeingTrained < this.species.length - 1) {
+            window.totalAsteroids = 5
             window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
             this.actualSpecimenBeeingTrained++
         } else {
