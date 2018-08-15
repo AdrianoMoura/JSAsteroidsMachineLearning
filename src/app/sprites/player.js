@@ -22,14 +22,14 @@ export default class Player extends Entity {
     }
 
     think() {
-        // Player won't thinks if is died and respawning 
         tf.tidy(() => {
+            // Player won't thinks if is died and respawning 
             if (this.died) {
                 return
             }
 
             // Select the nearest 5 asteroids 
-            // Because asteroids splits the number of inputs increases so wasn't possible to feed forward all asteroids info
+            // Because asteroids splits the number of inputs increases so wasn't possible to feed forward all asteroids info through the input layer
             const nearestAsteroids = asteroidsCollection.asteroids.sort((a, b) => {
                 const distA = p5.dist(a.x, a.y, this.pos.x, this.pos.y)
                 const distB = p5.dist(b.x, b.y, this.pos.x, this.pos.y)
@@ -54,6 +54,7 @@ export default class Player extends Entity {
                     asteroidsInfo.push(nearestAsteroids[i].vel.y)
                     asteroidsInfo.push(nearestAsteroids[i].radius)
                 } else {
+                    // If asteroids total is less than 5 push empty values to preserve input array shape
                     asteroidsInfo.push(0)
                     asteroidsInfo.push(0)
                     asteroidsInfo.push(0)
@@ -62,15 +63,19 @@ export default class Player extends Entity {
                 }
             }
 
+            // Get players info
             const playerInfo = [this.pos.x, this.pos.y, this.vel.x, this.vel.y, this.heading, this.accel]
 
+            // Make a guess
             const result = this.brain.predict([...asteroidsInfo, ...playerInfo])
 
+            // Get the outputs and make actions
             const rotation = result[0]
             const thrust = result[1]
             const warp = result[2]
             const shoot = result[3]
 
+            // Set rotation left, right ou maintain steady
             if (rotation > 0 && rotation < .33) {
                 this.rotate('LEFT')
             } else if (rotation > .66 && rotation < 1) {
@@ -79,16 +84,19 @@ export default class Player extends Entity {
                 this.rotate()
             }
 
+            // Accelerate or stop
             if (thrust >= .5) {
                 this.thrust(true)
             } else {
                 this.thrust(false)
             }
 
+            // Make a warp
             if (warp >= .5) {
                 this.warp()
             }
 
+            // Do a laser shoot
             if (shoot >= .5) {
                 this.shoot()
             }
@@ -97,7 +105,7 @@ export default class Player extends Entity {
 
     shoot() {
         /* 
-        Users use the space keyboard to shoot so it will be an reasonably delay beetween each shoot
+        When playing an human use the space keyboard to shoot so it will be an reasonably delay beetween each shoot
         As an IA the player can be shooting constantly that will break the proposite of learning, creating an advantage to the machine
         So I decide to add an delay beetween the shoots to make they look more like a traditional gameplay
         */
@@ -234,30 +242,6 @@ export default class Player extends Entity {
         return player
     }
 
-    mutate() {
-        console.log('doing mutation')
-        // Iterate over each brain layer to mutate then
-        this.brain.layers_weights = this.brain.layers_weights.map(layer => {
-            // Run over each value of actual layer
-            const mutated_weights = layer.dataSync().map(x => {
-                // Use a random to decide the chance of this genome being mutated
-                if (p5.random() < 0.05) {
-                    // Apply an randomGaussian to existing genome and return it
-                    let offset = p5.randomGaussian() * 0.5
-                    return x + offset
-                }
-                // return the same genome won't modified
-                return x
-            })
-            const shape = layer.shape
-
-            // Dispose actual layer
-            layer.dispose()
-            // Return a new tensor with mutated weights and same shape
-            return tf.tensor(mutated_weights, shape)
-        })
-        console.log('finishing mutation')
-    }
 
     crossover(partner) {
         console.log('doing crossover')
@@ -295,5 +279,30 @@ export default class Player extends Entity {
         console.log('finishing crossover')
 
         return child
+    }
+
+    mutate() {
+        console.log('doing mutation')
+        // Iterate over each brain layer to mutate then
+        this.brain.layers_weights = this.brain.layers_weights.map(layer => {
+            // Run over each value of actual layer
+            const mutated_weights = layer.dataSync().map(x => {
+                // Use a random to decide the chance of this genome being mutated
+                if (p5.random() < 0.05) {
+                    // Apply an randomGaussian to existing genome and return it
+                    let offset = p5.randomGaussian() * 0.5
+                    return x + offset
+                }
+                // return the same genome won't modified
+                return x
+            })
+            const shape = layer.shape
+
+            // Dispose actual layer
+            layer.dispose()
+            // Return a new tensor with mutated weights and same shape
+            return tf.tensor(mutated_weights, shape)
+        })
+        console.log('finishing mutation')
     }
 }

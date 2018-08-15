@@ -22,15 +22,19 @@ const sketch = (p5) => {
     // ======================================
     p5.setup = () => {
         p5.createCanvas(canvasWidth, canvasHeight)
+        p5.textFont(font)
         
         // Prepare game
         window.gameController = new GameController()
         window.dustCollection = new DustCollection()
+
+        // Create a generation
         window.generation = new Generations(10)
-        p5.textFont(font)
         
-        // Create a new generation
+        // Starts a generation
         generation.init(Player)
+
+        // Create first asteroids collection
         window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
     }
 
@@ -42,6 +46,7 @@ const sketch = (p5) => {
         if (generation.isEvolving) 
             return
 
+        // get actual player to test
         const player = generation.getActualSpecimen()
 
         // Draw game elements
@@ -103,13 +108,12 @@ const sketch = (p5) => {
         })
 
         if (player.lifes === 0) {
-            // All lifes ended let a new player start
+            // When loses all lifes let a new player try
             generation.goToNextSpecimen()
         }
 
 
-        // Show all estatistics 
-
+        // Show estatistics 
         p5.textSize(16);
         p5.textAlign(p5.LEFT);
         p5.text(
@@ -121,10 +125,6 @@ const sketch = (p5) => {
             N. Tensors: ${tf.memory().numTensors}\n
             `
             , canvasWidth/2, canvasHeight/2);
-    }
-
-    p5.windowResized = () => {
-        p5.resizeCanvas(canvasWidth, canvasHeight);
     }
 }
 
