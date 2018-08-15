@@ -19,14 +19,15 @@ export default class Asteroid extends Entity {
         let isColliding = true
         let pos
         let dist
+        let preventPos 
 
         // Generate an random position for asteroids, but check if this position collide with players position if so generate a new position until is safe to start the game
         while (isColliding) {
             pos = p5.createVector(p5.random(canvasWidth), p5.random(canvasHeight))
 
-            const centralPos = p5.createVector(canvasWidth/2, canvasHeight/2)
+            preventPos = generation.getActualSpecimen().pos.copy()
             
-            dist = p5.dist(pos.x, pos.y, centralPos.x, centralPos.y)
+            dist = p5.dist(pos.x, pos.y, preventPos.x, preventPos.y)
 
             if (dist > this.radius * 2 + 10) {
                 isColliding = false

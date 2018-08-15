@@ -25,13 +25,13 @@ const sketch = (p5) => {
         
         // Prepare game
         window.gameController = new GameController()
-        window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
         window.dustCollection = new DustCollection()
-        window.generation = new Generations(20)
+        window.generation = new Generations(10)
         p5.textFont(font)
-
+        
         // Create a new generation
         generation.init(Player)
+        window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
     }
 
     // Draw function
