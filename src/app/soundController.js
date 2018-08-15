@@ -10,26 +10,26 @@ export default class SoundController {
 
     laser() {
         this.laserSound.setVolume(.3);
-        // this.laserSound.play();
+        this.laserSound.play();
     }
 
     bigExplosion() {
         this.bigExplosionSound.setVolume(.5);
-        // this.bigExplosionSound.play();
+        this.bigExplosionSound.play();
     }
 
     mediumExplosion() {
         this.mediumExplosionSound.setVolume(.5);
-        // this.mediumExplosionSound.play();
+        this.mediumExplosionSound.play();
     }
 
     smallExplosion() {
         this.smallExplosionSound.setVolume(.5);
-        // this.smallExplosionSound.play();
+        this.smallExplosionSound.play();
     }
 
     thrust() {
         this.thrustSound.setVolume(.1);
-        // this.thrustSound.play();
+        this.thrustSound.play();
     }
 }
