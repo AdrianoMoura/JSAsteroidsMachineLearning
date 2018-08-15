@@ -59,6 +59,7 @@ export default class Generations {
         this.species.forEach(s => s.brain.dispose())
 
         this.species = new_species
+        window.totalAsteroids = 5
         this.actualSpecimenBeeingTrained = 0
         window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
         this.isEvolving = false
