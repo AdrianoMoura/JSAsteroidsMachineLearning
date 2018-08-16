@@ -37,15 +37,6 @@ export default class Generations {
         this.generation += 1
         this.generationHighscore = this.species.reduce((max, creature) => creature.score > max ? creature.score : max, 0)
         this.highScore = this.generationHighscore > this.highScore ? this.generationHighscore : this.highScore
-        
-        // Preserve best Specimen by score
-        const bestSpecimenByScore = this.species.reduce((prev, current) => current.score > prev.score ? current : prev)
-        // Check if the actual best is better 
-        if (!this.bestSpecimenByScore || this.bestSpecimenByScore.score < bestSpecimenByScore.score) {
-            // Or else dispose actual and replace it
-            this.bestSpecimenByScore && this.bestSpecimenByScore.brain.dispose()
-            this.bestSpecimenByScore = bestSpecimenByScore.clone()
-        }
 
         // Calculate Total Score of this Generation
         const totalScore = this.species.reduce((total, creature) => total += creature.score, 0)
@@ -62,13 +53,13 @@ export default class Generations {
         // Assign Fitness to each creature
         this.species.forEach((creature) => creature.fitness = creature.expScore / totalScoreExponential)
 
-        // Preserve best specimen by fitness
-        const bestSpecimenByFitness = this.species.reduce((prev, current) => current.fitness > prev.fitness ? current : prev)
+        // Preserve best Specimen
+        const bestSpecimenBy = this.species.reduce((prev, current) => current.score > prev.score ? current : prev)
         // Check if the actual best is better 
-        if (!this.bestSpecimenByFitness || this.bestSpecimenByFitness.fitness < bestSpecimenByFitness.fitness) {
+        if (!this.bestSpecimenBy || this.bestSpecimenBy.score < bestSpecimenBy.score) {
             // Or else dispose actual and replace it
-            this.bestSpecimenByFitness && this.bestSpecimenByFitness.brain.dispose()
-            this.bestSpecimenByFitness = bestSpecimenByFitness.clone()    
+            this.bestSpecimenBy && this.bestSpecimenBy.brain.dispose()
+            this.bestSpecimenBy = bestSpecimenBy.clone()
         }
 
         // Create a new generation
@@ -110,11 +101,7 @@ export default class Generations {
         }
     }
 
-    getBetterSpecimenByScore() {
-        return this.bestSpecimenByScore
-    }
-
-    getBetterSpecimenByFitness() {
-        return this.bestSpecimenByFitness
+    getBetterSpecimen() {
+        return this.bestSpecimenBy
     }
 }
