@@ -118,13 +118,16 @@ const sketch = (p5) => {
         p5.textAlign(p5.LEFT);
         p5.text(
             `
-            Generation: ${generation.generation}\n
-            Specimen:   ${generation.actualSpecimenBeeingTrained+1}/${generation.population}\n
-            Avg. Score: ${generation.avgScore}\n
-            HighScore:  ${generation.highScore}\n
-            N. Tensors: ${tf.memory().numTensors}\n
+            Generation:_____ ${generation.generation}
+            Specimen:_______ ${generation.actualSpecimenBeeingTrained+1}/${generation.population}
+            HighScore:______ ${generation.highScore}
+            Asteroids:______ ${asteroidsCollection.asteroids.length}\n
+            Last Generation:
+            HighScore:______ ${generation.generationHighscore}
+            Avg. Score:_____ ${generation.avgScore} ${generation.avgScoreDiff ? `${(generation.avgScoreDiff<0?"":"+")}${generation.avgScoreDiff}` : ''}
+            N. Tensors:_____ ${tf.memory().numTensors}
             `
-            , canvasWidth/2, canvasHeight/2);
+            , canvasWidth/2+100, canvasHeight/2+100);
     }
 }
 

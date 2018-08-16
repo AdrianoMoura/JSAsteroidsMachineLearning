@@ -6,7 +6,9 @@ export default class Generations {
         this.species = []
         this.generation = 1
         this.highScore = 0
+        this.generationHighscore = 0
         this.avgScore = 0
+        this.avgScoreDiff = 0
         this.actualSpecimenBeeingTrained = 0
         this.isEvolving = false
     }
@@ -29,27 +31,52 @@ export default class Generations {
     }
 
     evolve() {
-        console.log('start evolving')
+        
         this.isEvolving = true
         // Get and store the high score
         this.generation += 1
-        let generationHighscore = this.species.reduce((totalScore, creature) => creature.score > totalScore ? creature.score : totalScore, 0)
-        this.highScore = generationHighscore > this.highScore ? generationHighscore : this.highScore
+        this.generationHighscore = this.species.reduce((max, creature) => creature.score > max ? creature.score : max, 0)
+        this.highScore = this.generationHighscore > this.highScore ? this.generationHighscore : this.highScore
+        
+        // Preserve best Specimen by score
+        const bestSpecimenByScore = this.species.reduce((prev, current) => current.score > prev.score ? current : prev)
+        // Check if the actual best is better 
+        if (!this.bestSpecimenByScore || this.bestSpecimenByScore.score < bestSpecimenByScore.score) {
+            // Or else dispose actual and replace it
+            this.bestSpecimenByScore && this.bestSpecimenByScore.brain.dispose()
+            this.bestSpecimenByScore = bestSpecimenByScore.clone()
+        }
 
         // Calculate Total Score of this Generation
-        const totalScore = this.species.reduce((totalScore, creature) => totalScore += creature.score, 0)
+        const totalScore = this.species.reduce((total, creature) => total += creature.score, 0)
 
         // Calculate average score of this Generation
-        this.avgScore = totalScore / this.population;
+        const avgScore = totalScore / this.population
+        this.avgScoreDiff = avgScore - this.avgScore;
+        this.avgScore = avgScore;
+
+        // Make score exponentially better
+        this.species.forEach(creature => creature.score = Math.pow(creature.score, 2))
+        const totalScoreExponential = this.species.reduce((total, creature) => total += creature.score, 0)
 
         // Assign Fitness to each creature
-        this.species.forEach((creature) => creature.fitness = creature.score / totalScore)
+        this.species.forEach((creature) => creature.fitness = creature.score / totalScoreExponential)
+
+        // Preserve best specimen by fitness
+        const bestSpecimenByFitness = this.species.reduce((prev, current) => current.fitness > prev.fitness ? current : prev)
+        // Check if the actual best is better 
+        if (!this.bestSpecimenByFitness || this.bestSpecimenByFitness.fitness < bestSpecimenByFitness.fitness) {
+            // Or else dispose actual and replace it
+            this.bestSpecimenByFitness && this.bestSpecimenByFitness.brain.dispose()
+            this.bestSpecimenByFitness = bestSpecimenByFitness.clone()    
+        }
 
         // Create a new generation
         const new_species = this.species.map(() => {
             const parentA = this.pickOne()
             const parentB = this.pickOne()
             const child = parentA.crossover(parentB)
+            child.score = 0
             child.mutate()
             parentA.brain.dispose()
             parentB.brain.dispose()
@@ -63,7 +90,7 @@ export default class Generations {
         this.actualSpecimenBeeingTrained = 0
         window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
         this.isEvolving = false
-        console.log('ending evolving')
+        
         // end the evolving
         return
     }
@@ -82,5 +109,13 @@ export default class Generations {
             // If this training reaches the end of the specimen start the evolving
             this.evolve()
         }
+    }
+
+    getBetterSpecimenByScore() {
+        return this.bestSpecimenByScore
+    }
+
+    getBetterSpecimenByFitness() {
+        return this.bestSpecimenByFitness
     }
 }
