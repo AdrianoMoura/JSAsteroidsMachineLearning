@@ -56,11 +56,11 @@ export default class Generations {
         this.avgScore = avgScore;
 
         // Make score exponentially better
-        this.species.forEach(creature => creature.score = Math.pow(creature.score, 2))
-        const totalScoreExponential = this.species.reduce((total, creature) => total += creature.score, 0)
+        this.species.forEach(creature => creature.expScore = Math.pow(creature.score, 2))
+        const totalScoreExponential = this.species.reduce((total, creature) => total += creature.expScore, 0)
 
         // Assign Fitness to each creature
-        this.species.forEach((creature) => creature.fitness = creature.score / totalScoreExponential)
+        this.species.forEach((creature) => creature.fitness = creature.expScore / totalScoreExponential)
 
         // Preserve best specimen by fitness
         const bestSpecimenByFitness = this.species.reduce((prev, current) => current.fitness > prev.fitness ? current : prev)
@@ -76,7 +76,6 @@ export default class Generations {
             const parentA = this.pickOne()
             const parentB = this.pickOne()
             const child = parentA.crossover(parentB)
-            child.score = 0
             child.mutate()
             parentA.brain.dispose()
             parentB.brain.dispose()
