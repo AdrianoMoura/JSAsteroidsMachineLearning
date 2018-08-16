@@ -120,8 +120,7 @@ const sketch = (p5) => {
             `
             Generation:_____ ${generation.generation}
             Specimen:_______ ${generation.actualSpecimenBeeingTrained+1}/${generation.population}
-            HighScore:______ ${generation.highScore}
-            Asteroids:______ ${asteroidsCollection.asteroids.length}\n
+            HighScore:______ ${generation.highScore}\n
             Last Generation:
             HighScore:______ ${generation.generationHighscore}
             Avg. Score:_____ ${generation.avgScore} ${generation.avgScoreDiff ? `${(generation.avgScoreDiff<0?"":"+")}${generation.avgScoreDiff}` : ''}

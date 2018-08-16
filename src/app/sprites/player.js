@@ -13,7 +13,7 @@ export default class Player extends Entity {
         this.dieTimeout = 2000
         this.isSafe = true
         this.safeCheck = 0
-        this.brain = new NeuralNetwork(31, 100, 4)
+        this.brain = new NeuralNetwork(31, 100, 50, 4)
         this.fitness = 0
         this.score = 0
         this.lifes = 1

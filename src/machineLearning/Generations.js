@@ -54,12 +54,13 @@ export default class Generations {
         this.species.forEach((creature) => creature.fitness = creature.expScore / totalScoreExponential)
 
         // Preserve best Specimen
-        const bestSpecimenBy = this.species.reduce((prev, current) => current.score > prev.score ? current : prev)
+        const bestSpecimen = this.species.reduce((prev, current) => current.score > prev.score ? current : prev)
         // Check if the actual best is better 
-        if (!this.bestSpecimenBy || this.bestSpecimenBy.score < bestSpecimenBy.score) {
+        if (!this.bestSpecimen || this.bestSpecimen.score < bestSpecimen.score) {
             // Or else dispose actual and replace it
-            this.bestSpecimenBy && this.bestSpecimenBy.brain.dispose()
-            this.bestSpecimenBy = bestSpecimenBy.clone()
+            this.bestSpecimen && this.bestSpecimen.brain.dispose()
+            this.bestSpecimen = bestSpecimen.clone()
+            bestSpecimen.brain.dispose()
         }
 
         // Create a new generation
@@ -102,6 +103,6 @@ export default class Generations {
     }
 
     getBetterSpecimen() {
-        return this.bestSpecimenBy
+        return this.bestSpecimen
     }
 }
