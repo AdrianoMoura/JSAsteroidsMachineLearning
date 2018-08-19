@@ -1,3 +1,4 @@
+import * as tf from '@tensorflow/tfjs';
 import AsteroidsCollection from '../app/collections/AsteroidsCollection';
 
 export default class Generations {
@@ -31,7 +32,7 @@ export default class Generations {
     }
 
     evolve() {
-        
+
         this.isEvolving = true
         // Get and store the high score
         this.generation += 1
@@ -54,14 +55,10 @@ export default class Generations {
         this.species.forEach((creature) => creature.fitness = creature.expScore / totalScoreExponential)
 
         // Preserve best Specimen
-        const bestSpecimen = this.species.reduce((prev, current) => current.score > prev.score ? current : prev)
-        // Check if the actual best is better 
-        if (!this.bestSpecimen || this.bestSpecimen.score < bestSpecimen.score) {
-            // Or else dispose actual and replace it
-            this.bestSpecimen && this.bestSpecimen.brain.dispose()
-            this.bestSpecimen = bestSpecimen.clone()
-            bestSpecimen.brain.dispose()
-        }
+        const bestSpecimen = this.species.reduce((prev, current) => current.fitness > prev.fitness ? current : prev)
+        this.bestSpecimen && this.bestSpecimen.brain.dispose()
+        this.bestSpecimen = bestSpecimen.clone()
+        bestSpecimen.brain.dispose()
 
         // Create a new generation
         const new_species = this.species.map(() => {
@@ -81,7 +78,7 @@ export default class Generations {
         this.actualSpecimenBeeingTrained = 0
         window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
         this.isEvolving = false
-        
+
         // end the evolving
         return
     }
@@ -104,5 +101,73 @@ export default class Generations {
 
     getBetterSpecimen() {
         return this.bestSpecimen
+    }
+
+    runFromPlayerData(specimen_weights, Creature) {
+
+        this.isEvolving = true
+        const player = new Creature()
+
+        const playerLayers = player.brain.layers_weights.map((el, i) => {
+            const shape = el.shape
+            const layer = specimen_weights[i]
+
+            return tf.tensor(layer, shape)
+        })
+
+        player.brain.dispose()
+        player.score = 0
+        player.fitness = 0
+
+        player.brain.layers_weights = playerLayers
+
+        
+        this.generation = 1
+        this.population = 1
+        this.highScore = 0
+        this.generationHighscore = 0
+        this.avgScore = 0
+        this.avgScoreDiff = 0
+        this.actualSpecimenBeeingTrained = 0
+
+        this.species.forEach(s => s.brain.dispose())
+        this.species = [player]
+        
+        window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
+        this.isEvolving = false
+    }
+
+    runFromGenerationData(species_array, generationNumber, population, Creature) {
+        const species = Array.from({ length: this.population }, (el, player_index) => {
+            const player = new Creature()
+
+            const playerLayers = player.brain.layers_weights.map((el, layer_index) => {
+                const shape = el.shape
+                const layer = species_array[player_index][layer_index]
+    
+                return tf.tensor(layer, shape)
+            })
+            player.brain.dispose()
+            player.score = 0
+            player.fitness = 0
+
+            player.brain.layers_weights = playerLayers
+
+            return player
+        })
+
+        this.generation = generationNumber
+        this.population = population
+        this.highScore = 0
+        this.generationHighscore = 0
+        this.avgScore = 0
+        this.avgScoreDiff = 0
+        this.actualSpecimenBeeingTrained = 0
+
+        this.species.forEach(s => s.brain.dispose())
+        this.species = species
+        
+        window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
+        this.isEvolving = false
     }
 }

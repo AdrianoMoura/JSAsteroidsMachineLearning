@@ -6,6 +6,7 @@ import Player from './sprites/player';
 import DustCollection from './collections/DustCollection';
 import SoundController from './soundController';
 import Generations from '../machineLearning/Generations';
+import UI from './sprites/UI';
 
 const sketch = (p5) => {
     window.p5 = p5
@@ -27,6 +28,7 @@ const sketch = (p5) => {
         // Prepare game
         window.gameController = new GameController()
         window.dustCollection = new DustCollection()
+        window.ui = new UI()
 
         // Create a generation
         window.generation = new Generations(10)
@@ -52,8 +54,8 @@ const sketch = (p5) => {
         // Draw game elements
         asteroidsCollection.draw()
         dustCollection.draw()
-        player.think()
         player.draw()
+        player.think()
 
         // Show actual score
         p5.textSize(28);
