@@ -13,7 +13,7 @@ export default class Player extends Entity {
         this.dieTimeout = 2000
         this.isSafe = true
         this.safeCheck = 0
-        this.brain = new NeuralNetwork(32, 100, 50, 4)
+        this.brain = new NeuralNetwork(31, 100, 50, 4)
         this.fitness = 0
         this.score = 0
         this.lifes = 1
@@ -31,8 +31,8 @@ export default class Player extends Entity {
             // Select the nearest 5 asteroids 
             // Because asteroids splits the number of inputs increases so wasn't possible to feed forward all asteroids info through the input layer
             const nearestAsteroids = asteroidsCollection.asteroids.sort((a, b) => {
-                const distA = p5.dist(a.x, a.y, this.pos.x, this.pos.y)
-                const distB = p5.dist(b.x, b.y, this.pos.x, this.pos.y)
+                const distA = p5.dist(a.pos.x, a.pos.y, this.pos.x, this.pos.y)
+                const distB = p5.dist(b.pos.x, b.pos.y, this.pos.x, this.pos.y)
 
                 if (distA > distB) {
                     return 1
@@ -41,7 +41,7 @@ export default class Player extends Entity {
                 }
 
                 return 0
-            }).slice(0, 5)
+            }).slice(0,5)
 
             // get all asteroids info           
             let asteroidsInfo = []
@@ -64,7 +64,7 @@ export default class Player extends Entity {
             }
 
             // Get players info
-            const playerInfo = [this.pos.x, this.pos.y, this.vel.x, this.vel.y, this.heading, this.accel, this.rotation]
+            const playerInfo = [this.pos.x, this.pos.y, this.vel.x, this.vel.y, this.heading, this.accel]
 
             // Make a guess
             const result = this.brain.predict([...asteroidsInfo, ...playerInfo])
