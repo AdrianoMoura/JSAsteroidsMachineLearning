@@ -1,5 +1,4 @@
 import * as tf from '@tensorflow/tfjs';
-import AsteroidsCollection from '../app/collections/AsteroidsCollection';
 
 export default class Generations {
     constructor(population) {
@@ -31,7 +30,7 @@ export default class Generations {
         return selected
     }
 
-    evolve() {
+    evolve(callback) {
 
         this.isEvolving = true
         // Get and store the high score
@@ -56,12 +55,13 @@ export default class Generations {
 
         // Preserve best Specimen
         const bestSpecimen = this.species.reduce((prev, current) => current.fitness > prev.fitness ? current : prev)
-        this.bestSpecimen && this.bestSpecimen.brain.dispose()
-        this.bestSpecimen = bestSpecimen.clone()
-        bestSpecimen.brain.dispose()
+        if (!this.bestSpecimen || bestSpecimen.fitness >= this.bestSpecimen.fitness) {
+            this.bestSpecimen && this.bestSpecimen.brain.dispose()
+            this.bestSpecimen = bestSpecimen.clone()
+        }
 
         // Create a new generation
-        const new_species = this.species.map(() => {
+        const new_species = Array.from({ length: this.population - 1 }, () => {
             const parentA = this.pickOne()
             const parentB = this.pickOne()
             const child = parentA.crossover(parentB)
@@ -71,15 +71,17 @@ export default class Generations {
             return child
         })
 
+        new_species.push(this.bestSpecimen.clone())
+
         this.species.forEach(s => s.brain.dispose())
 
         this.species = new_species
-        window.totalAsteroids = 5
         this.actualSpecimenBeeingTrained = 0
-        window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
         this.isEvolving = false
 
         // end the evolving
+
+        callback()
         return
     }
 
@@ -87,15 +89,14 @@ export default class Generations {
         return this.species[this.actualSpecimenBeeingTrained]
     }
 
-    goToNextSpecimen() {
-        // go to next specimen so respawn new asteroids
+    goToNextSpecimen(callback) {
+        // go to next specimen
         if (this.actualSpecimenBeeingTrained < this.species.length - 1) {
-            window.totalAsteroids = 5
-            window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
             this.actualSpecimenBeeingTrained++
+            callback();
         } else {
             // If this training reaches the end of the specimen start the evolving
-            this.evolve()
+            this.evolve(callback)
         }
     }
 
@@ -121,7 +122,7 @@ export default class Generations {
 
         player.brain.layers_weights = playerLayers
 
-        
+
         this.generation = 1
         this.population = 1
         this.highScore = 0
@@ -132,8 +133,7 @@ export default class Generations {
 
         this.species.forEach(s => s.brain.dispose())
         this.species = [player]
-        
-        window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
+
         this.isEvolving = false
     }
 
@@ -144,7 +144,7 @@ export default class Generations {
             const playerLayers = player.brain.layers_weights.map((el, layer_index) => {
                 const shape = el.shape
                 const layer = species_array[player_index][layer_index]
-    
+
                 return tf.tensor(layer, shape)
             })
             player.brain.dispose()
@@ -166,8 +166,7 @@ export default class Generations {
 
         this.species.forEach(s => s.brain.dispose())
         this.species = species
-        
-        window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
+
         this.isEvolving = false
     }
 }

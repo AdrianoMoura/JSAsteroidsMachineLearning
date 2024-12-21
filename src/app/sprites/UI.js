@@ -11,24 +11,24 @@ export default class UI {
 
     show() {
         // Save 
-        this.saveButton.position(20, canvasHeight+10);
+        this.saveButton.position(20, canvasHeight + 10);
         this.saveButton.elt.addEventListener('click', this.savePlayer);
-        
+
         // Load
-        this.loadPlayer.position(20, canvasHeight+40);
+        this.loadPlayer.position(20, canvasHeight + 40);
         this.loadPlayer.elt.addEventListener('click', this.loadPlayerFile);
-        
+
         // Save progress
-        this.saveProgress.position(20, canvasHeight+100);
+        this.saveProgress.position(20, canvasHeight + 100);
         this.saveProgress.elt.addEventListener('click', this.saveGeneration);
-        
+
         // Load Progress
-        this.loadProgress.position(20, canvasHeight+130);
+        this.loadProgress.position(20, canvasHeight + 130);
         this.loadProgress.elt.addEventListener('click', this.loadGenerationFile);
     }
 
     savePlayer() {
-        p5.saveJSON(generation.getBetterSpecimen().brain.layers_weights.map(layer =>  layer.dataSync()), 'bestSpecimen.json');
+        p5.saveJSON(generation.getBetterSpecimen().brain.layers_weights.map(layer => layer.dataSync()), 'bestSpecimen.json');
     }
 
     loadPlayerFile() {
@@ -36,6 +36,7 @@ export default class UI {
             // Create a generation
             const arrayData = data.map(layer => Object.keys(layer).map(value => layer[value]))
             generation.runFromPlayerData(arrayData, Player)
+            window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
         });
     }
 
@@ -43,18 +44,19 @@ export default class UI {
         p5.saveJSON({
             generation: generation.generation,
             population: generation.population,
-            species: generation.species.map(speciment => speciment.brain.layers_weights.map(layer =>  layer.dataSync()))
+            species: generation.species.map(speciment => speciment.brain.layers_weights.map(layer => layer.dataSync()))
         }, 'generation.json');
     }
 
     loadGenerationFile(file) {
-        
+
         p5.loadJSON('generation.json', (data) => {
             // Create a generation
             const generationNumber = data.generation
             const population = data.population
             const arrayData = data.species.map(specimen => specimen.map(layer => Object.keys(layer).map(value => layer[value])))
             generation.runFromGenerationData(arrayData, generationNumber, population, Player)
+            window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
         });
     }
 }

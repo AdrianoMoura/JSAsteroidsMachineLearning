@@ -5,9 +5,16 @@ export default class DustCollection {
         this.dusts = []
     }
 
-    draw() {
+    move() {
         for (let i = 0; i < this.dusts.length; i++) {
-            this.dusts[i].draw()
+            this.dusts[i].move()
+            this.dusts[i].opacity <= 0 && this.dusts.splice(i,1)
+        }
+    }
+
+    render() {
+        for (let i = 0; i < this.dusts.length; i++) {
+            this.dusts[i].render()
             this.dusts[i].opacity <= 0 && this.dusts.splice(i,1)
         }
     }

@@ -15,9 +15,15 @@ export default class AsteroidsCollection {
         }
     }
 
-    draw() {
+    move() {
         for (let i = 0; i < this.asteroids.length; i++) {
-            this.asteroids[i].draw()
+            this.asteroids[i].move()
+        }
+    }
+
+    render() {
+        for (let i = 0; i < this.asteroids.length; i++) {
+            this.asteroids[i].render()
         }
     }
 

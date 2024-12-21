@@ -7,11 +7,6 @@ export default class Entity {
         this.accel = 0
     }
 
-    draw() {
-        this.move()
-        this.render()
-    }
-
     move() {
         this.heading += this.rotation;
         let force = p5.createVector(Math.cos(this.heading), Math.sin(this.heading))

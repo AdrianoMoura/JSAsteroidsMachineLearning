@@ -24,15 +24,17 @@ const sketch = (p5) => {
     p5.setup = () => {
         p5.createCanvas(canvasWidth, canvasHeight)
         p5.textFont(font)
-        
+
         // Prepare game
         window.gameController = new GameController()
         window.dustCollection = new DustCollection()
         window.ui = new UI()
 
+        window.slider = p5.createSlider(1, 100, 1)
+
         // Create a generation
-        window.generation = new Generations(10)
-        
+        window.generation = new Generations(100)
+
         // Starts a generation
         generation.init(Player)
 
@@ -45,17 +47,25 @@ const sketch = (p5) => {
     p5.draw = () => {
         p5.background(0)
 
-        if (generation.isEvolving) 
+        if (generation.isEvolving)
             return
 
-        // get actual player to test
-        const player = generation.getActualSpecimen()
+        let player
 
-        // Draw game elements
-        asteroidsCollection.draw()
-        dustCollection.draw()
-        player.draw()
-        player.think()
+        // get actual player to test
+        for (let n = 0; n < slider.value(); n++) {
+            player = generation.getActualSpecimen()
+
+            // Draw game elements
+            player.think()
+            player.move()
+            asteroidsCollection.move()
+            dustCollection.move()
+        }
+
+        asteroidsCollection.render()
+        dustCollection.render()
+        player.render()
 
         // Show actual score
         p5.textSize(28);
@@ -111,7 +121,10 @@ const sketch = (p5) => {
 
         if (player.lifes === 0) {
             // When loses all lifes let a new player try
-            generation.goToNextSpecimen()
+            generation.goToNextSpecimen(() => {
+                window.totalAsteroids = 5
+                window.asteroidsCollection = new AsteroidsCollection(totalAsteroids)
+            })
         }
 
 
@@ -121,14 +134,14 @@ const sketch = (p5) => {
         p5.text(
             `
             Generation:_____ ${generation.generation}
-            Specimen:_______ ${generation.actualSpecimenBeeingTrained+1}/${generation.population}
+            Specimen:_______ ${generation.actualSpecimenBeeingTrained + 1}/${generation.population}
             HighScore:______ ${generation.highScore}\n
             Last Generation:
             HighScore:______ ${generation.generationHighscore}
-            Avg. Score:_____ ${generation.avgScore} ${generation.avgScoreDiff ? `${(generation.avgScoreDiff<0?"":"+")}${generation.avgScoreDiff}` : ''}
+            Avg. Score:_____ ${generation.avgScore} ${generation.avgScoreDiff ? `${(generation.avgScoreDiff < 0 ? "" : "+")}${generation.avgScoreDiff}` : ''}
             N. Tensors:_____ ${tf.memory().numTensors}
             `
-            , canvasWidth/2+100, canvasHeight/2+100);
+            , canvasWidth / 2 + 100, canvasHeight / 2 + 100);
     }
 }
 
